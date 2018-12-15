@@ -1,0 +1,5 @@
+-- this file is used by `parseRoutesFile`
+-- Syntax for this file here: https://www.yesodweb.com/book/routing-and-handlers
+
+/               HomeR           GET POST
+/ajaxupdate     AjaxUpdateR     POST

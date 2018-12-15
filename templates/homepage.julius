@@ -1,0 +1,92 @@
+
+reversePrefixMap = {
+  "http://www.w3.org/2000/01/rdf-schema#": "rdfs",
+  "http://xmlns.com/foaf/0.1/": "foaf",
+  "http://purl.org/dc/terms/": "dcterms",
+  "http://purl.org/dc/elements/1.1/": "dc",
+  "http://www.w3.org/1999/02/22-rdf-syntax-ns#": "rdf",
+  "http://www.w3.org/2006/vcard/ns#": "vcard",
+  "http://www.w3.org/2002/07/owl#": "owl"
+}
+
+function shortenUri(uri) {
+  for (k in reversePrefixMap) {
+    if (uri.startsWith(k)) {
+      return reversePrefixMap[k] + ":" + uri.substr(k.length)
+    }
+  }
+  return "<" + uri + ">";
+}
+
+function showResultValue(v) {
+  if (!v.type || !v.value) {
+    return "";
+  }
+  if (v.type == "uri") {
+    return shortenUri(v.value);
+  } else if (v.type == "literal") {
+    return '"' + v.value + '"';
+  } else if (v.type == "bnode") {
+    return "_:" + v.value;
+  }
+  return v.value;
+}
+
+function buildTable(data) {
+  tab = $("<table>");
+  if (data.warnings && data.results && data.results.bindings.length == 0) {
+    for (var i = 0; i < data.warnings.length; i++) {
+      tab.append($("<tr>").text(data.warnings[i]));
+    }
+    return tab;
+  }
+
+  if (!data.head) {
+    return tab;
+  }
+
+  r = $("<tr>");
+
+  for (var i = 0; i < data.head.vars.length; i++) {
+    h = $("<th>").text(data.head.vars[i])
+    r.append(h)
+  }
+  tab.append(r)
+
+  for (var i = 0; i < data.results.bindings.length; i++) {
+    r = $("<tr>");
+
+    for (var j = 0; j < data.head.vars.length; j++) {
+      r.append($("<td>").text(
+        showResultValue(
+          data.results.bindings[i][data.head.vars[j]])));
+    }
+    tab.append(r)
+  }
+  return tab;
+}
+
+var postTimer;
+function inputChanged(event) {
+    if (postTimer) {
+        clearTimeout(postTimer);
+    }
+    postTimer = setTimeout(function() {
+      // Make an AJAX request to the server with the new data
+      $.ajax({
+        url: '@{AjaxUpdateR}',
+        type: 'POST',
+        contentType: "application/json",
+        data: JSON.stringify({
+          message: event.target.value,
+        }),
+        success: function (data) {
+          $("##{rawJS resultId}").html("");
+          $("##{rawJS resultId}").append(buildTable(data));
+        },
+        error: function (data) {
+          console.log("Error posting update: " + data);
+        },
+      });
+    }, 1500);
+}

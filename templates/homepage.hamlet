@@ -1,0 +1,11 @@
+<div>
+    <div>
+        <h3 .base__title>Enter SPARQL Query
+        <br>
+        <form method="POST" action=@{HomeR} enctype=#{enctype}>
+            ^{userInputWidget}
+            <noscript>
+                <input .btn name="bsubmit" value="Submit" type="submit">
+    <hr>
+    <div>Results:<br>
+        <div ##{resultId}> <pre> #{queryResult}
