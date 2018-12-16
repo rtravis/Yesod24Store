@@ -10,7 +10,7 @@ back-end. The query results are displayed in the browser.
 
 ## Requirements
 
-- a Linux operating system
+- preferably a Linux based operating system
 - the Glasgow Haskell Compilation system (the "ghc" package)
 - the "libghc-yesod-dev" and the "4store" packages
 

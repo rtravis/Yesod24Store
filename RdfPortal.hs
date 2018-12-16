@@ -34,6 +34,23 @@ data UserInput = UserInput
     }
   deriving Show
 
+defaultQuery :: Text
+defaultQuery = "\
+    \PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n\
+    \PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n\
+    \PREFIX owl: <http://www.w3.org/2002/07/owl#>\n\
+    \PREFIX dc: <http://purl.org/dc/elements/1.1/>\n\
+    \PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n\
+    \PREFIX vcard: <http://www.w3.org/2006/vcard/ns#>\n\
+    \\n\
+    \SELECT *\n\
+    \WHERE {\n\
+    \    ?s ?p ?o .\n\
+    \    # FILTER regex(str(?o), '', 'i')\n\
+    \}\n\
+    \# ORDER BY ?s\n\
+    \LIMIT 8"
+
 -- Declare the form.
 --
 -- * We have our Handler as the inner monad, which indicates which site this is
@@ -45,14 +62,14 @@ data UserInput = UserInput
 -- * The Widget is the viewable form to place into the web page.
 userInputForm :: Html -> MForm Handler (FormResult UserInput, Widget)
 userInputForm = renderDivs $ UserInput
-    <$> areq textareaField textSettings (Just $ Textarea "")
+    <$> areq textareaField textSettings (Just $ Textarea defaultQuery)
     where textSettings = FieldSettings
             { fsLabel = ""
             , fsTooltip = Nothing
             , fsId = Nothing
             , fsName = Just "textarea1"
             , fsAttrs =
-                [ ("rows", "10")
+                [ ("rows", "13")
                 , ("cols", "65")
                 , ("oninput", "inputChanged(event)")
                 , ("placeholder", "input message here")
@@ -92,7 +109,6 @@ commandArgs isJson = ["-P", "-f", formatString isJson, knowledgeBase]
 
 runSparqlQuery :: Bool -> Text -> IO Text
 runSparqlQuery jsonFormat input = do
-    let format = "json"
     x <- readProcess queryCommand (commandArgs jsonFormat) (unpack input)
     case stripSuffix "#EOR\n" (pack x) of
         Just y -> return y
