@@ -9,6 +9,7 @@ import           Data.Text           (Text, unpack, pack, stripSuffix)
 import           System.Process      (readProcess)
 import           Text.Hamlet         (hamletFile)
 import           Text.Julius         (RawJS (..))
+import           Text.Lucius         (Css, luciusFile)
 import           Yesod
 
 -- local imports are below this line
@@ -77,6 +78,9 @@ userInputForm = renderDivs $ UserInput
                 ]
             }
 
+getElemIds :: (Text)
+getElemIds = ("js-resultId")
+
 layoutPage :: (Widget, Enctype, Text) -> Handler Html
 layoutPage (userInputWidget, enctype, queryResult) = do
     let (resultId) = getElemIds
@@ -143,8 +147,10 @@ postAjaxUpdateR = do
     qresult <- liftIO $ runSparqlQuery True $ getmsg req
     return $ TypedContent "application/sparql-results+json" $ toContent qresult
 
-getElemIds :: (Text)
-getElemIds = ("js-resultId")
+getMainStyleR :: Handler Css
+getMainStyleR = do
+    render <- getUrlRenderParams
+    return $ $(luciusFile "templates/main.lucius") render
 
 main :: IO ()
 main = warp 3000 RdfPortalApp
