@@ -10,10 +10,12 @@
 -- declared in the Foundation.hs file.
 module Settings where
 
-import ClassyPrelude.Yesod
+import ClassyPrelude
 import qualified Control.Exception as Exception
-import Data.Aeson                  (Result (..), fromJSON, withObject, (.!=),
+import Data.Aeson                  (Result (..), FromJSON, Value, fromJSON,
+                                    parseJSON, withObject, (.!=), (.:),
                                     (.:?))
+import Data.Default                (def)
 import Data.FileEmbed              (embedFile)
 import Data.Yaml                   (decodeEither')
 import Language.Haskell.TH.Syntax  (Exp, Name, Q)
@@ -21,6 +23,8 @@ import Network.Wai.Handler.Warp    (HostPreference)
 import Yesod.Default.Config2       (applyEnvValue, configSettingsYml)
 import Yesod.Default.Util          (WidgetFileSettings, widgetFileNoReload,
                                     widgetFileReload)
+import Yesod.Static                (CombineSettings, Route, Static,
+                                    combineScripts', combineStylesheets')
 
 -- | Runtime settings to configure this application. These settings can be
 -- loaded from various sources: defaults, environment variables, config files,
