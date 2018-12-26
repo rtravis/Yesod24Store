@@ -4,3 +4,4 @@
 /               HomeR           GET POST
 /ajaxupdate     AjaxUpdateR     POST
 /main.css       MainStyleR      GET
+/jquery.js      JQueryR         GET

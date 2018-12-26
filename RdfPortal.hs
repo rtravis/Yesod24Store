@@ -6,6 +6,7 @@
 {-# LANGUAGE TypeFamilies          #-}
 import           Control.Applicative ((<$>), (<*>))
 import           Data.Text           (Text, unpack, pack, stripSuffix)
+import           Data.FileEmbed      (embedFile)
 import           System.Process      (readProcess)
 import           Text.Hamlet         (hamletFile)
 import           Text.Julius         (RawJS (..))
@@ -149,8 +150,16 @@ postAjaxUpdateR = do
 
 getMainStyleR :: Handler Css
 getMainStyleR = do
+    cacheSeconds $ 60 * 60 * 24 * 7 -- cache for a week
     render <- getUrlRenderParams
-    return $ $(luciusFile "templates/main.lucius") render
+    return $ $(luciusFile "static/main.lucius") render
+
+getJQueryR :: Handler TypedContent
+getJQueryR = do
+    cacheSeconds $ 60 * 60 * 24 * 30 -- cache for a month
+    return $ TypedContent typeJavascript
+                    $ toContent $(embedFile "static/jquery.js")
+
 
 main :: IO ()
 main = warp 3000 RdfPortalApp
