@@ -4,6 +4,9 @@
 {-# LANGUAGE QuasiQuotes           #-}
 {-# LANGUAGE TemplateHaskell       #-}
 {-# LANGUAGE TypeFamilies          #-}
+
+module RdfPortal where
+
 import           Control.Applicative ((<$>), (<*>))
 import           Data.Text           (Text, unpack, pack, stripSuffix)
 import           Data.FileEmbed      (embedFile)
@@ -140,11 +143,11 @@ data AjaxMessage = AjaxMessage { getmsg :: Text }
 
 instance FromJSON AjaxMessage where
     parseJSON (Object o) = AjaxMessage <$> (o .: "message")
-    parseJSON _ = fail $ "unexpected JSON"
+    parseJSON _ = fail "unexpected JSON"
 
 postAjaxUpdateR :: Handler TypedContent
 postAjaxUpdateR = do
-    req <- requireJsonBody :: Handler AjaxMessage
+    req <- requireCheckJsonBody :: Handler AjaxMessage
     qresult <- liftIO $ runSparqlQuery True $ getmsg req
     return $ TypedContent "application/sparql-results+json" $ toContent qresult
 

@@ -1,0 +1,17 @@
+cabal-version:       2.4
+name:                Yesod24Store
+version:             0.1.0.0
+synopsis: Submit SPARQL queries from a web-browser to a 4store back-end.
+description: See README.md
+bug-reports:         https://github.com/rtravis/Yesod24Store/issues
+license:             MIT
+license-file:        LICENSE
+author:              Robert Zavalczki
+maintainer:          rtravis@users.noreply.github.com
+
+extra-source-files:  README.md
+
+executable Yesod24Store
+  main-is:             RdfPortal.hs
+  build-depends:       base ^>=4.13.0.0
+  default-language:    Haskell2010
